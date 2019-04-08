@@ -1,6 +1,6 @@
 package core;
 
-import core.userinterface.terminal.CommandLineInterface;
+import core.userinterface.CommandLineInterface;
 import core.userinterface.terminal.Terminal;
 import core.userinterface.terminal.TerminalInput;
 import core.userinterface.terminal.TerminalOutput;
