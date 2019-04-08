@@ -1,4 +1,4 @@
-package com.bobenem.movygroovy.util;
+package core.util;
 
 import java.io.Serializable;
 import java.util.Optional;

@@ -1,6 +1,6 @@
-package com.bobenem.movygroovy.util.either;
+package core.util.either;
 
-import com.bobenem.movygroovy.util.Option;
+import core.util.Option;
 
 import java.util.function.Function;
 

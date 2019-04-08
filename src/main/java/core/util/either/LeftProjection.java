@@ -1,4 +1,4 @@
-package com.bobenem.movygroovy.util.either;
+package core.util.either;
 
 import java.util.NoSuchElementException;
 import java.util.function.Function;

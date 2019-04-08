@@ -1,4 +1,4 @@
-package com.bobenem.movygroovy.util.function;
+package core.util.function;
 
 @FunctionalInterface
 public interface ThrowingSupplier<T> {

@@ -1,9 +1,9 @@
-package com.bobenem.movygroovy.util;
+package core.util;
 
-import com.bobenem.movygroovy.util.either.Either;
-import com.bobenem.movygroovy.util.either.Left;
-import com.bobenem.movygroovy.util.either.Right;
-import com.bobenem.movygroovy.util.function.ThrowingSupplier;
+import core.util.either.Either;
+import core.util.either.Left;
+import core.util.either.Right;
+import core.util.function.ThrowingSupplier;
 
 import java.io.Serializable;
 import java.util.function.Consumer;

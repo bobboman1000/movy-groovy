@@ -1,4 +1,4 @@
-package com.bobenem.movygroovy.util.either;
+package core.util.either;
 
 final public class Right<L, R> extends Either<L, R>{
     private Right(R right) {
