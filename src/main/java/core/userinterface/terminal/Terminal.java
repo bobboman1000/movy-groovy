@@ -33,6 +33,11 @@ public class Terminal {
         );
     }
 
+    public Option<String> getString(String prompt) {
+        outputHandler.print(prompt);
+        return inputHandler.getNextString();
+    }
+
     public Option<Boolean> selectYesOrNo(String prompt) {
         outputHandler.print(prompt);
         return inputHandler.getNextBoolean();
