@@ -2,7 +2,7 @@ package core.userinterface.terminal;
 
 public class CommandLineInterface {
     private Terminal terminal;
-    
+
     public CommandLineInterface(Terminal terminal) {
         this.terminal = terminal;
     }

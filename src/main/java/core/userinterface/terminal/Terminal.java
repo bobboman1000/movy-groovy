@@ -24,9 +24,12 @@ public class Terminal {
     public void put(String prompt, Map options) { outputHandler.print(prompt, options); }
     public void put(String prompt, List options) { outputHandler.print(prompt, options); }
 
+    /** Returns the selected option of a set of options
+     * @param options the options the user can select from
+     * @return int the key of the selected option */
     public Option<Integer> selectFrom(Map<Integer, ?> options) {
-        return inputHandler.getNextInteger().map(key ->
-                options.keySet().contains(key) ? key : null
+        return inputHandler.getNextInteger().flatMap(key ->
+                options.keySet().contains(key) ? Option.of(key) : Option.empty()
         );
     }
 
