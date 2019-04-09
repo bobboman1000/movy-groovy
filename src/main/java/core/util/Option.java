@@ -77,6 +77,14 @@ public class Option<T> implements Serializable {
         if (isPresent() && condition.test(value)) return this;
         return Option.empty();
     }
+
+    public <R extends T> Option<R> flatten() {
+        if (!this.isPresent()) return Option.empty();
+        if (this.value instanceof Option) {
+            return (Option<R>) this.get();
+        } else throw new RuntimeException("Cannot flatten already flat Option");
+    }
+
     /* Bridges the gap between implementations with Javas Optional */
     public Optional<T> toOptional() { return Optional.ofNullable(value); }
     public static <T> Option<T> fromOptional(Optional<T> t) {
