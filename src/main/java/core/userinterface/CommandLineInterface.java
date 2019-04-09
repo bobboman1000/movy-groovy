@@ -3,6 +3,7 @@ package core.userinterface;
 import com.github.felixgail.gplaymusic.api.GPlayMusic;
 import com.github.felixgail.gplaymusic.model.Track;
 import com.github.felixgail.gplaymusic.util.TokenProvider;
+import com.sun.xml.internal.ws.util.CompletedFuture;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.SpotifyApiThreading;
 import com.wrapper.spotify.model_objects.specification.AlbumSimplified;
@@ -14,6 +15,7 @@ import core.structs.SpotifyAlbum;
 import core.userinterface.terminal.Terminal;
 import core.util.Option;
 import core.util.Try;
+import core.util.either.Either;
 
 import java.net.URI;
 import java.util.concurrent.Callable;
@@ -54,8 +56,15 @@ public class CommandLineInterface {
             Stream<Future<Try<SpotifyAlbum>>> spotifyAlbums =
                     googlePlayMusicAlbums.map(toSpotifyAlbum);
 
-            Function<Future<Try<SpotifyAlbum>>, Future<Result>> addToLibrary =
-            spotifyAlbums.map(addToLibrary);
+            Function<Future<Try<SpotifyAlbum>>, Try<Future<Result>>> addToLibrary =
+                    (eventualAlbum) ->
+                        Try.applyThrowing(eventualAlbum::get).flatMap(possibleAlbum ->
+                                possibleAlbum.map(album -> addToSpotifyAccount(album, spotifyApi))
+                        );
+
+            Stream<Try<Future<Result>>> results = spotifyAlbums.map(addToLibrary);
+
+            results.map(result -> result.getOrElse(new Result()))
         });
 
         // albums.map(album -> addToSpotify(album));
@@ -91,7 +100,9 @@ public class CommandLineInterface {
                 Try.applyThrowing(() -> api.getTrackApi()
                         .getLibraryTracks()
                         .stream()
-                ).getOrElse(Stream.empty());
+                )
+                .onFailure((ex) -> terminal.log("Couldn't get Library tracks from google play music", ex))
+                .getOrElse(Stream.empty());
 
         return tracks
                 .map(track -> new GooglePlayMusicAlbum(track.getAlbumArtist(), track.getAlbum()))
@@ -103,15 +114,16 @@ public class CommandLineInterface {
                 .saveAlbumsForCurrentUser(album.id)
                 .build();
 
-        Callable<Option<String>> mapped = () -> Try.applyThrowing(apiRequest::execute)
-                .map(Option::of)
-                .toOption()
-                .flatten();
+        Callable<Result> mapped = () -> Try.applyThrowing(apiRequest::execute)
+                .onFailure(ex -> terminal.log(String.format("Couldn't add album '%s - %s'", album.artist, album.title), ex))
+                .toOption() // this is necessary because the result of execute might be null
+                .map(response -> new Result(true, album))
+                .getOrElse(new Result(false, album));
 
         return SpotifyApiThreading.executeAsync(mapped);
     }
 
-    private Future<Try<SpotifyAlbum>> fetchSpotifyAlbumId(GooglePlayMusicAlbum gpmAlbum, SpotifyApi api) {
+    private Future<Either<GooglePlayMusicAlbum, SpotifyAlbum>> fetchSpotifyAlbumId(GooglePlayMusicAlbum gpmAlbum, SpotifyApi api) {
         String query = gpmAlbum.artist + gpmAlbum.title; // this is subject to another ticket
 
         // there's executeAsync but no map so we need to register our own callback. Thanks java

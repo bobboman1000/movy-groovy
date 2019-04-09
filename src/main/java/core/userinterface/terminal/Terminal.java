@@ -2,6 +2,7 @@ package core.userinterface.terminal;
 
 import core.util.Option;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -19,6 +20,11 @@ public class Terminal {
         this.outputHandler = outputHandler;
     }
 
+    public void log(String message, Throwable ex) {
+        outputHandler.print("LOGGER: " + message);
+        outputHandler.print(ex.getMessage());
+        outputHandler.print(Arrays.asList(ex.getStackTrace()));
+    }
     public void put(Object any) { outputHandler.print(any); }
     public void put(List any) { outputHandler.print(any); }
     public void put(String prompt, Map options) { outputHandler.print(prompt, options); }
