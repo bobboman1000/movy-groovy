@@ -77,6 +77,7 @@ public class Option<T> implements Serializable {
         if (isPresent() && condition.test(value)) return this;
         return Option.empty();
     }
+
     /* Bridges the gap between implementations with Javas Optional */
     public Optional<T> toOptional() { return Optional.ofNullable(value); }
     public static <T> Option<T> fromOptional(Optional<T> t) {
